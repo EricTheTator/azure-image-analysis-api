@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Image Analysis API - Documentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            margin: 0.5rem 0.25rem;
+            font-size: 0.9rem;
+        }
+        
+        nav {
+            background: #2c3e50;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        nav a:hover {
+            color: #667eea;
+        }
+        
+        .content {
+            padding: 2rem;
+        }
+        
+        section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 80px;
+        }
+        
+        h2 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        h3 {
+            color: #764ba2;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        h4 {
+            color: #555;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .endpoint {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .method {
+            display: inline-block;
+            padding: 0.35rem 0.9rem;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .post {
+            background: #28a745;
+            color: white;
+        }
+        
+        .get {
+            background: #007bff;
+            color: white;
+        }
+        
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 1.5rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        code {
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 0.95rem;
+        }
+        
+        .inline-code {
+            background: #f4f4f4;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+        }
+        
+        .example {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        
+        .error-codes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .error-card {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        
+        .error-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .error-card h4 {
+            color: #dc3545;
+            margin-top: 0;
+        }
+        
+        .demo-section {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 2.5rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.9rem 2rem;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        input[type="text"], input[type="file"], select {
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            width: 100%;
+            margin: 0.5rem 0;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .result {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-top: 1.5rem;
+            display: none;
+            max-height: 500px;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .feature-card i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .feature-card h4 {
+            color: white;
+            margin: 0.5rem 0;
+        }
+        
+        .feature-card p {
+            font-size: 0.95rem;
+            opacity: 0.95;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        
+        .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-camera"></i> Azure Image Analysis API</h1>
+            <p>Powerful AI-driven image analysis powered by Azure Computer Vision</p>
+            <div>
+                <span class="badge"><i class="fas fa-bolt"></i> Fast</span>
+                <span class="badge"><i class="fas fa-shield-alt"></i> Secure</span>
+                <span class="badge"><i class="fas fa-cloud"></i> Cloud-Powered</span>
+                <span class="badge"><i class="fas fa-code"></i> RESTful</span>
+            </div>
+        </header>
+        
+        <nav>
+            <ul>
+                <li><a href="#getting-started"><i class="fas fa-rocket"></i> Getting Started</a></li>
+                <li><a href="#features"><i class="fas fa-star"></i> Features</a></li>
+                <li><a href="#endpoints"><i class="fas fa-plug"></i> Endpoints</a></li>
+                <li><a href="#examples"><i class="fas fa-code"></i> Examples</a></li>
+                <li><a href="#errors"><i class="fas fa-exclamation-triangle"></i> Errors</a></li>
+                <li><a href="#demo"><i class="fas fa-play-circle"></i> Live Demo</a></li>
+            </ul>
+        </nav>
+        
+        <div class="content">
+            <section id="getting-started">
+                <h2><i class="fas fa-rocket"></i> Getting Started</h2>
+                
+                <p>Welcome to the Azure Image Analysis API! This powerful API leverages Microsoft Azure's Computer Vision service to provide comprehensive image analysis capabilities including object detection, description generation, tag extraction, and much more.</p>
+                
+                <div class="info-box">
+                    <strong><i class="fas fa-info-circle"></i> Quick Start:</strong> All you need is an image URL or file to get started. Our API handles the rest!
+                </div>
+                
+                <h3>Base URL</h3>
+                <pre><code>http://localhost:3000/api/v1</code></pre>
+                
+                <h3>Authentication</h3>
+                <p>This API is currently running in development mode with authentication handled server-side. No API key is required for client requests.</p>
+                
+                <h3>Rate Limits</h3>
+                <div class="warning-box">
+                    <strong><i class="fas fa-exclamation-triangle"></i> Free Tier Limits:</strong>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>20 requests per minute</li>
+                        <li>5,000 requests per month</li>
+                        <li>Maximum file size: 10MB</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="features">
+                <h2><i class="fas fa-star"></i> Features</h2>
+                
+                <p>Our API provides comprehensive image analysis through Azure's state-of-the-art Computer Vision service:</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-file-alt"></i>
+                        <h4>Description</h4>
+                        <p>AI-generated natural language descriptions of image content</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-tags"></i>
+                        <h4>Tags</h4>
+                        <p>Extract relevant keywords and tags from images</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-cube"></i>
+                        <h4>Objects</h4>
+                        <p>Detect and locate objects with bounding boxes</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-palette"></i>
+                        <h4>Colors</h4>
+                        <p>Analyze dominant and accent colors</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-image"></i>
+                        <h4>Image Type</h4>
+                        <p>Detect clipart, line drawings, and image characteristics</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-user"></i>
+                        <h4>Faces</h4>
+                        <p>Detect faces with age and gender estimation</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-shield-alt"></i>
+                        <h4>Adult Content</h4>
+                        <p>Detect adult, racy, or gory content</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-trademark"></i>
+                        <h4>Brands</h4>
+                        <p>Recognize well-known brands and logos</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-sitemap"></i>
+                        <h4>Categories</h4>
+                        <p>Categorize images into predefined taxonomy</p>
+                    </div>
+                </div>
+                
+                <h3>Feature Availability</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Parameter Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Description</strong></td>
+                            <td><code>Description</code></td>
+                            <td>Generates human-readable sentences describing the image</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tags</strong></td>
+                            <td><code>Tags</code></td>
+                            <td>Returns a list of relevant tags with confidence scores</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Objects</strong></td>
+                            <td><code>Objects</code></td>
+                            <td>Detects objects and returns bounding box coordinates</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Color</strong></td>
+                            <td><code>Color</code></td>
+                            <td>Analyzes dominant colors, accent color, and B&W detection</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Image Type</strong></td>
+                            <td><code>ImageType</code></td>
+                            <td>Detects if image is clipart or line drawing</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Faces</strong></td>
+                            <td><code>Faces</code></td>
+                            <td>Detects faces with age and gender estimation</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Adult</strong></td>
+                            <td><code>Adult</code></td>
+                            <td>Detects adult or racy content with confidence scores</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Brands</strong></td>
+                            <td><code>Brands</code></td>
+                            <td>Recognizes commercial brands and logos</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Categories</strong></td>
+                            <td><code>Categories</code></td>
+                            <td>Categorizes image using 86-category taxonomy</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            
+            <section id="endpoints">
+                <h2><i class="fas fa-plug"></i> API Endpoints</h2>
+                
+                <div class="endpoint">
+                    <span class="method post">POST</span>
+                    <code>/api/v1/analyze/url</code>
+                    <p><strong>Analyze an image from a URL</strong></p>
+                    
+                    <h4>Request Headers:</h4>
+                    <pre><code>Content-Type: application/json</code></pre>
+                    
+                    <h4>Request Body:</h4>
+                    <pre><code>{
+  "url": "https://example.com/image.jpg",
+  "features": ["Description", "Tags", "Objects", "Color"]
+}</code></pre>
+                    
+                    <h4>Parameters:</h4>
+                    <ul>
+                        <li><code>url</code> (required): Direct URL to the image</li>
+                        <li><code>features</code> (optional): Array of features to analyze. Default: ["Description", "Tags", "Objects", "Color"]</li>
+                    </ul>
+                    
+                    <h4>Success Response (200):</h4>
+                    <pre><code>{
+  "success": true,
+  "data": {
+    "description": {
+      "tags": ["outdoor", "building", "sky"],
+      "captions": [{
+        "text": "a large building with a clock tower",
+        "confidence": 0.9567
+      }]
+    },
+    "tags": [
+      { "name": "building", "confidence": 0.98 },
+      { "name": "outdoor", "confidence": 0.95 }
+    ],
+    "objects": [
+      {
+        "rectangle": { "x": 10, "y": 20, "w": 100, "h": 150 },
+        "object": "clock",
+        "confidence": 0.89
+      }
+    ],
+    "color": {
+      "dominantColorForeground": "Blue",
+      "dominantColorBackground": "Grey",
+      "accentColor": "4472C4"
+    }
+  },
+  "metadata": {
+    "requestId": "abc123...",
+    "timestamp": "2025-12-08T23:15:00.000Z"
+  }
+}</code></pre>
+                </div>
+                
+                <div class="endpoint">
+                    <span class="method post">POST</span>
+                    <code>/api/v1/analyze/upload</code>
+                    <p><strong>Analyze an uploaded image file</strong></p>
+                    
+                    <h4>Request Headers:</h4>
+                    <pre><code>Content-Type: multipart/form-data</code></pre>
+                    
+                    <h4>Form Data:</h4>
+                    <ul>
+                        <li><code>image</code> (required): Image file (JPG, PNG, GIF, BMP)</li>
+                        <li><code>features</code> (optional): JSON array string or comma-separated list</li>
+                    </ul>
+                    
+                    <div class="info-box">
+                        <strong><i class="fas fa-info-circle"></i> Supported Formats:</strong> JPEG, PNG, GIF, BMP, WEBP<br>
+                        <strong>Maximum Size:</strong> 10MB
+                    </div>
+                    
+                    <h4>Success Response (200):</h4>
+                    <pre><code>{
+  "success": true,
+  "data": { /* Same as URL endpoint */ },
+  "metadata": {
+    "filename": "my-photo.jpg",
+    "size": 2458624,
+    "mimeType": "image/jpeg",
+    "requestId": "xyz789...",
+    "timestamp": "2025-12-08T23:15:00.000Z"
+  }
+}</code></pre>
+                </div>
+                
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <code>/api/v1/analyze/features</code>
+                    <p><strong>Get list of available analysis features</strong></p>
+                    
+                    <h4>Response:</h4>
+                    <pre><code>{
+  "success": true,
+  "features": [
+    {
+      "name": "Description",
+      "description": "Generate human-readable descriptions"
+    },
+    // ... more features
+  ]
+}</code></pre>
+                </div>
+                
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <code>/health</code>
+                    <p><strong>Check API health status</strong></p>
+                    
+                    <h4>Response:</h4>
+                    <pre><code>{
+  "status": "healthy",
+  "timestamp": "2025-12-08T23:15:00.000Z",
+  "uptime": 3600.5
+}</code></pre>
+                </div>
+            </section>
+            
+            <section id="examples">
+                <h2><i class="fas fa-code"></i> Usage Examples</h2>
+                
+                <div class="tabs">
+                    <div class="tab active" onclick="showTab('curl')">cURL</div>
+                    <div class="tab" onclick="showTab('javascript')">JavaScript</div>
+                    <div class="tab" onclick="showTab('python')">Python</div>
+                    <div class="tab" onclick="showTab('powershell')">PowerShell</div>
+                </div>
+                
+                <div id="curl" class="tab-content active">
+                    <h3>cURL Example - Analyze from URL</h3>
+                    <pre><code>curl -X POST http://localhost:3000/api/v1/analyze/url \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com/image.jpg",
+    "features": ["Description", "Tags", "Objects"]
+  }'</code></pre>
+                    
+                    <h3>cURL Example - Upload File</h3>
+                    <pre><code>curl -X POST http://localhost:3000/api/v1/analyze/upload \
+  -F "image=@/path/to/image.jpg" \
+  -F 'features=["Description","Tags"]'</code></pre>
+                </div>
+                
+                <div id="javascript" class="tab-content">
+                    <h3>JavaScript (Fetch API)</h3>
+                    <pre><code>// Analyze from URL
+async function analyzeImageFromUrl(imageUrl) {
+  const response = await fetch('http://localhost:3000/api/v1/analyze/url', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      url: imageUrl,
+      features: ['Description', 'Tags', 'Objects', 'Color']
+    })
+  });
+  
+  const data = await response.json();
+  return data;
+}
+
+// Upload file
+async function analyzeImageFromFile(file) {
+  const formData = new FormData();
+  formData.append('image', file);
+  formData.append('features', JSON.stringify(['Description', 'Tags']));
+  
+  const response = await fetch('http://localhost:3000/api/v1/analyze/upload', {
+    method: 'POST',
+    body: formData
+  });
+  
+  const data = await response.json();
+  return data;
+}
+
+// Example usage
+analyzeImageFromUrl('https://example.com/photo.jpg')
+  .then(result => console.log(result))
+  .catch(error => console.error(error));</code></pre>
+                </div>
+                
+                <div id="python" class="tab-content">
+                    <h3>Python (requests library)</h3>
+                    <pre><code>import requests
+
+# Analyze from URL
+def analyze_image_from_url(image_url):
+    url = 'http://localhost:3000/api/v1/analyze/url'
+    payload = {
+        'url': image_url,
+        'features': ['Description', 'Tags', 'Objects', 'Color']
+    }
+    response = requests.post(url, json=payload)
+    return response.json()
+
+# Upload file
+def analyze_image_from_file(file_path):
+    url = 'http://localhost:3000/api/v1/analyze/upload'
+    
+    with open(file_path, 'rb') as f:
+        files = {'image': f}
+        data = {'features': '["Description","Tags"]'}
+        response = requests.post(url, files=files, data=data)
+    
+    return response.json()
+
+# Example usage
+result = analyze_image_from_url('https://example.com/photo.jpg')
+print(result)</code></pre>
+                </div>
+                
+                <div id="powershell" class="tab-content">
+                    <h3>PowerShell</h3>
+                    <pre><code># Analyze from URL
+$body = @{
+    url = "https://example.com/image.jpg"
+    features = @("Description", "Tags", "Objects")
+} | ConvertTo-Json
+
+$result = Invoke-RestMethod -Uri "http://localhost:3000/api/v1/analyze/url" `
+    -Method Post `
+    -Body $body `
+    -ContentType "application/json"
+
+Write-Output $result
+
+# Upload file
+$filePath = "C:\path\to\image.jpg"
+$form = @{
+    image = Get-Item -Path $filePath
+    features = '["Description","Tags"]'
+}
+
+$result = Invoke-RestMethod -Uri "http://localhost:3000/api/v1/analyze/upload" `
+    -Method Post `
+    -Form $form
+
+Write-Output $result</code></pre>
+                </div>
+                
+                <div class="example">
+                    <h3><i class="fas fa-lightbulb"></i> Real-World Example</h3>
+                    <p><strong>Scenario:</strong> Building an e-commerce product catalog system</p>
+                    <pre><code>// Automatically tag and describe product images
+async function processProductImage(imageUrl) {
+  const analysis = await fetch('http://localhost:3000/api/v1/analyze/url', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      url: imageUrl,
+      features: ['Description', 'Tags', 'Color', 'Objects']
+    })
+  }).then(r => r.json());
+  
+  // Extract useful information
+  const productDescription = analysis.data.description.captions[0].text;
+  const tags = analysis.data.tags.map(t => t.name);
+  const dominantColors = [
+    analysis.data.color.dominantColorForeground,
+    analysis.data.color.dominantColorBackground
+  ];
+  
+  return {
+    description: productDescription,
+    tags: tags,
+    colors: dominantColors
+  };
+}</code></pre>
+                </div>
+            </section>
+            
+            <section id="errors">
+                <h2><i class="fas fa-exclamation-triangle"></i> Error Handling</h2>
+                
+                <p>The API uses standard HTTP status codes and returns detailed error messages in JSON format.</p>
+                
+                <h3>Error Response Format</h3>
+                <pre><code>{
+  "success": false,
+  "error": "Descriptive error message",
+  "code": "ErrorCode" // Optional Azure error code
+}</code></pre>
+                
+                <h3>HTTP Status Codes</h3>
+                <div class="error-codes">
+                    <div class="error-card">
+                        <h4>400 Bad Request</h4>
+                        <p>Invalid request format, missing required fields, or malformed URL</p>
+                        <p><strong>Example:</strong> Missing image URL or invalid JSON</p>
+                    </div>
+                    
+                    <div class="error-card">
+                        <h4>401 Unauthorized</h4>
+                        <p>Invalid or missing Azure API credentials</p>
+                        <p><strong>Resolution:</strong> Check server configuration</p>
+                    </div>
+                    
+                    <div class="error-card">
+                        <h4>413 Payload Too Large</h4>
+                        <p>Uploaded image exceeds 10MB size limit</p>
+                        <p><strong>Resolution:</strong> Compress or resize the image</p>
+                    </div>
+                    
+                    <div class="error-card">
+                        <h4>415 Unsupported Media Type</h4>
+                        <p>File type not supported</p>
+                        <p><strong>Supported:</strong> JPEG, PNG, GIF, BMP, WEBP</p>
+                    </div>
+                    
+                    <div class="error-card">
+                        <h4>429 Too Many Requests</h4>
+                        <p>Rate limit exceeded (20 requests/min)</p>
+                        <p><strong>Resolution:</strong> Wait before retrying</p>
+                    </div>
+                    
+                    <div class="error-card">
+                        <h4>500 Internal Server Error</h4>
+                        <p>Unexpected server error</p>
+                        <p><strong>Action:</strong> Check server logs and try again</p>
+                    </div>
+                    
+                    <div class="error-card">
+                        <h4>502 Bad Gateway</h4>
+                        <p>Azure service temporarily unavailable</p>
+                        <p><strong>Action:</strong> Retry after a brief delay</p>
+                    </div>
+                    
+                    <div class="error-card">
+                        <h4>503 Service Unavailable</h4>
+                        <p>Server is temporarily down</p>
+                        <p><strong>Action:</strong> Check health endpoint</p>
+                    </div>
+                </div>
+                
+                <h3>Common Azure API Errors</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Error Code</th>
+                            <th>Description</th>
+                            <th>Solution</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>InvalidImageUrl</code></td>
+                            <td>Image URL is inaccessible</td>
+                            <td>Verify URL is publicly accessible</td>
+                        </tr>
+                        <tr>
+                            <td><code>InvalidImageFormat</code></td>
+                            <td>Image format not supported</td>
+                            <td>Use JPEG, PNG, GIF, or BMP</td>
+                        </tr>
+                        <tr>
+                            <td><code>InvalidImageSize</code></td>
+                            <td>Image dimensions too small or large</td>
+                            <td>Use images 50x50 to 16,000x16,000 pixels</td>
+                        </tr>
+                        <tr>
+                            <td><code>InvalidParameter</code></td>
+                            <td>Invalid feature parameter</td>
+                            <td>Check feature names are correctly spelled</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>Error Handling Best Practices</h3>
+                <div class="example">
+                    <pre><code>async function analyzeImageSafely(imageUrl) {
+  try {
+    const response = await fetch('http://localhost:3000/api/v1/analyze/url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: imageUrl })
+    });
+    
+    const data = await response.json();
+    
+    if (!data.success) {
+      console.error('Analysis failed:', data.error);
+      // Handle specific errors
+      if (response.status === 429) {
+        console.log('Rate limit hit, waiting before retry...');
+        await new Promise(r => setTimeout(r, 3000));
+        return analyzeImageSafely(imageUrl); // Retry
+      }
+      return null;
+    }
+    
+    return data;
+    
+  } catch (error) {
+    console.error('Network error:', error);
+    return null;
+  }
+}</code></pre>
+                </div>
+            </section>
+            
+            <section id="demo">
+                <h2><i class="fas fa-play-circle"></i> Live Interactive Demo</h2>
+                
+                <div class="demo-section">
+                    <h3>🖼️ Try It Out!</h3>
+                    <p>Test the API directly in your browser. Choose to analyze an image from a URL or upload your own.</p>
+                    
+                    <div style="margin: 2rem 0;">
+                        <label><strong>Select Analysis Method:</strong></label>
+                        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                            <button onclick="switchDemo('url')" id="btnUrl">Analyze from URL</button>
+                            <button onclick="switchDemo('upload')" id="btnUpload">Upload Image</button>
+                        </div>
+                    </div>
+                    
+                    <div id="demoUrl">
+                        <label><strong>Image URL:</strong></label>
+                        <input type="text" id="imageUrl" 
+                               placeholder="https://example.com/image.jpg" 
+                               value="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg">
+                    </div>
+                    
+                    <div id="demoUpload" style="display: none;">
+                        <label><strong>Select Image File:</strong></label>
+                        <input type="file" id="imageFile" accept="image/*">
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem;">
+                        <label><strong>Analysis Features:</strong></label>
+                        <select id="features" multiple size="5" style="height: auto;">
+                            <option value="Description" selected>Description</option>
+                            <option value="Tags" selected>Tags</option>
+                            <option value="Objects" selected>Objects</option>
+                            <option value="Color" selected>Color</option>
+                            <option value="ImageType">Image Type</option>
+                            <option value="Faces">Faces</option>
+                            <option value="Adult">Adult Content Detection</option>
+                            <option value="Brands">Brands</option>
+                            <option value="Categories">Categories</option>
+                        </select>
+                        <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">
+                            <i class="fas fa-info-circle"></i> Hold Ctrl/Cmd to select multiple features
+                        </p>
+                    </div>
+                    
+                    <button onclick="analyzeDemoImage()" style="margin-top: 1rem;">
+                        <i class="fas fa-magic"></i> Analyze Image
+                    </button>
+                    
+                    <div id="demoResult" class="result"></div>
+                </div>
+                
+                <div class="success-box">
+                    <h4><i class="fas fa-check-circle"></i> Pro Tips:</h4>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>Try the example cat image URL that's pre-filled</li>
+                        <li>Upload your own images to see custom analysis</li>
+                        <li>Experiment with different feature combinations</li>
+                        <li>Check your browser console for detailed logs</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section>
+                <h2><i class="fas fa-book"></i> Additional Resources</h2>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-file-code"></i>
+                        <h4>API Reference</h4>
+                        <p>Complete endpoint documentation</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h4>Tutorials</h4>
+                        <p>Step-by-step integration guides</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fab fa-github"></i>
+                        <h4>Source Code</h4>
+                        <p>View on GitHub</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-question-circle"></i>
+                        <h4>Support</h4>
+                        <p>Get help and report issues</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <footer>
+            <p><strong>Azure Image Analysis API</strong></p>
+            <p>Powered by Microsoft Azure Computer Vision</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                <i class="fas fa-graduation-cap"></i> UNCC Final Project - System Integration
+            </p>
+        </footer>
+    </div>
+    
+    <script>
+        let currentDemo = 'url';
+        
+        function switchDemo(type) {
+            currentDemo = type;
+            document.getElementById('demoUrl').style.display = type === 'url' ? 'block' : 'none';
+            document.getElementById('demoUpload').style.display = type === 'upload' ? 'block' : 'none';
+            
+            // Update button styles
+            document.getElementById('btnUrl').style.opacity = type === 'url' ? '1' : '0.6';
+            document.getElementById('btnUpload').style.opacity = type === 'upload' ? '1' : '0.6';
+        }
+        
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        async function analyzeDemoImage() {
+            const resultDiv = document.getElementById('demoResult');
+            const featuresSelect = document.getElementById('features');
+            const selectedFeatures = Array.from(featuresSelect.selectedOptions).map(opt => opt.value);
+            
+            if (selectedFeatures.length === 0) {
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = '<p style="color: red;"><i class="fas fa-exclamation-triangle"></i> Please select at least one analysis feature</p>';
+                return;
+            }
+            
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<p><span class="loading"></span> Analyzing image...</p>';
+            
+            try {
+                let response;
+                
+                if (currentDemo === 'url') {
+                    const url = document.getElementById('imageUrl').value;
+                    
+                    if (!url) {
+                        resultDiv.innerHTML = '<p style="color: red;"><i class="fas fa-times-circle"></i> Please enter an image URL</p>';
+                        return;
+                    }
+                    
+                    response = await fetch('/api/v1/analyze/url', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            url: url,
+                            features: selectedFeatures
+                        })
+                    });
+                } else {
+                    const fileInput = document.getElementById('imageFile');
+                    const file = fileInput.files[0];
+                    
+                    if (!file) {
+                        resultDiv.innerHTML = '<p style="color: red;"><i class="fas fa-times-circle"></i> Please select an image file</p>';
+                        return;
+                    }
+                    
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    formData.append('features', JSON.stringify(selectedFeatures));
+                    
+                    response = await fetch('/api/v1/analyze/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    let html = '<h3 style="color: #28a745;"><i class="fas fa-check-circle"></i> Analysis Complete!</h3>';
+                    
+                    // Description
+                    if (data.data.description) {
+                        html += '<h4><i class="fas fa-file-alt"></i> Description:</h4>';
+                        html += '<p><strong>' + data.data.description.captions[0].text + '</strong></p>';
+                        html += '<p><em>Confidence: ' + (data.data.description.captions[0].confidence * 100).toFixed(1) + '%</em></p>';
+                    }
+                    
+                    // Tags
+                    if (data.data.tags) {
+                        html += '<h4><i class="fas fa-tags"></i> Tags:</h4>';
+                        html += '<p>' + data.data.tags.slice(0, 10).map(tag => 
+                            `<span style="background: #667eea; color: white; padding: 0.3rem 0.6rem; border-radius: 4px; margin: 0.2rem; display: inline-block;">
+                                ${tag.name} (${(tag.confidence * 100).toFixed(0)}%)
+                            </span>`
+                        ).join(' ') + '</p>';
+                    }
+                    
+                    // Objects
+                    if (data.data.objects) {
+                        html += '<h4><i class="fas fa-cube"></i> Objects Detected:</h4>';
+                        html += '<ul style="margin-left: 1.5rem;">';
+                        data.data.objects.forEach(obj => {
+                            html += `<li><strong>${obj.object}</strong> - Confidence: ${(obj.confidence * 100).toFixed(1)}%</li>`;
+                        });
+                        html += '</ul>';
+                    }
+                    
+                    // Colors
+                    if (data.data.color) {
+                        html += '<h4><i class="fas fa-palette"></i> Colors:</h4>';
+                        html += '<p>Dominant: ' + data.data.color.dominantColorForeground + ' / ' + data.data.color.dominantColorBackground + '</p>';
+                        html += '<p>Accent Color: <span style="background: #' + data.data.color.accentColor + '; color: white; padding: 0.3rem 0.6rem; border-radius: 4px;">#' + data.data.color.accentColor + '</span></p>';
+                    }
+                    
+                    // Raw data
+                    html += '<h4><i class="fas fa-code"></i> Full Response:</h4>';
+                    html += '<pre style="max-height: 300px; overflow-y: auto;">' + JSON.stringify(data, null, 2) + '</pre>';
+                    
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = '<p style="color: red;"><i class="fas fa-times-circle"></i> <strong>Error:</strong> ' + data.error + '</p>';
+                }
+                
+            } catch (error) {
+                console.error('Demo error:', error);
+                resultDiv.innerHTML = '<p style="color: red;"><i class="fas fa-times-circle"></i> <strong>Error:</strong> ' + error.message + '</p>';
+            }
+        }
+        
+        // Smooth scrolling for navigation
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
