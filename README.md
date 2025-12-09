@@ -7,6 +7,13 @@ A professional, production-ready REST API that provides seamless access to Micro
 [![Azure](https://img.shields.io/badge/Azure-Computer%20Vision-0089D6.svg)](https://azure.microsoft.com/en-us/services/cognitive-services/computer-vision/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+
+
+## 🎮 Live Demo
+
+**Interactive Demo:** [http://165.22.163.145:3000/demo-test.html](http://165.22.163.145:3000/demo-test.html)
+
+Test the API with both URL-based analysis and file uploads!
 ---
 
 ## 📋 Table of Contents
@@ -628,7 +635,7 @@ For technical support or questions:
 
 ## 🎓 Academic Project
 
-This API was developed as part of the UNCC Digital Forensics program to demonstrate:
+This API was developed as part of the UNCC System Integration program to demonstrate:
 - System integration skills
 - API design and documentation
 - Cloud service integration
