@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test - Working Demo</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        button { background: #667eea; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin: 5px; }
+        button:hover { background: #5568d3; }
+        button.secondary { background: #6c757d; }
+        button.secondary:hover { background: #5a6268; }
+        input[type="text"], input[type="file"] { width: 100%; padding: 10px; margin: 10px 0; border: 2px solid #ddd; border-radius: 5px; font-size: 14px; }
+        #result { background: #f5f5f5; padding: 20px; margin-top: 20px; border-radius: 5px; display: none; }
+        pre { background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 12px; }
+        h1 { color: #667eea; }
+        .tag { background: #667eea; color: white; padding: 5px 10px; border-radius: 3px; margin: 3px; display: inline-block; font-size: 14px; }
+        .tab-buttons { margin: 20px 0; }
+        .demo-section { display: none; padding: 20px; background: #f8f9fa; border-radius: 5px; margin: 10px 0; }
+        .demo-section.active { display: block; }
+    </style>
+</head>
+<body>
+    <h1>🖼️ Azure Image Analysis API - Test Demo</h1>
+    <p>Test your API with this demo. Full documentation is at the <a href="/">home page</a>.</p>
+    
+    <div class="tab-buttons">
+        <button onclick="showTab('url')" id="btnUrl">Analyze from URL</button>
+        <button onclick="showTab('upload')" id="btnUpload" class="secondary">Upload Image File</button>
+    </div>
+    
+    <!-- URL Demo -->
+    <div id="urlDemo" class="demo-section active">
+        <h2>Analyze Image from URL</h2>
+        <input type="text" id="imageUrl" placeholder="Enter image URL" value="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg">
+        <button onclick="analyzeFromUrl()">Analyze Image</button>
+    </div>
+    
+    <!-- File Upload Demo -->
+    <div id="uploadDemo" class="demo-section">
+        <h2>Upload and Analyze Image</h2>
+        <input type="file" id="imageFile" accept="image/*">
+        <button onclick="analyzeFromUpload()">Analyze Uploaded Image</button>
+    </div>
+    
+    <div id="result"></div>
+    
+    <script>
+        function showTab(tab) {
+            // Hide all demos
+            document.getElementById('urlDemo').classList.remove('active');
+            document.getElementById('uploadDemo').classList.remove('active');
+            
+            // Update button styles
+            document.getElementById('btnUrl').className = tab === 'url' ? '' : 'secondary';
+            document.getElementById('btnUpload').className = tab === 'upload' ? '' : 'secondary';
+            
+            // Show selected demo
+            if (tab === 'url') {
+                document.getElementById('urlDemo').classList.add('active');
+            } else {
+                document.getElementById('uploadDemo').classList.add('active');
+            }
+        }
+        
+        async function analyzeFromUrl() {
+            const url = document.getElementById('imageUrl').value;
+            const resultDiv = document.getElementById('result');
+            
+            if (!url) {
+                alert('Please enter an image URL');
+                return;
+            }
+            
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<p>🔄 Analyzing image...</p>';
+            
+            try {
+                const response = await fetch('/api/v1/analyze/url', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        url: url,
+                        features: ['Description', 'Tags', 'Objects', 'Color']
+                    })
+                });
+                
+                const data = await response.json();
+                displayResults(data);
+                
+            } catch (error) {
+                resultDiv.innerHTML = '<h2 style="color: red;">❌ Error</h2><p>' + error.message + '</p>';
+            }
+        }
+        
+        async function analyzeFromUpload() {
+            const fileInput = document.getElementById('imageFile');
+            const resultDiv = document.getElementById('result');
+            
+            if (!fileInput.files || !fileInput.files[0]) {
+                alert('Please select an image file');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            
+            // Check file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file (JPG, PNG, GIF, etc.)');
+                return;
+            }
+            
+            // Check file size (10MB limit)
+            if (file.size > 10 * 1024 * 1024) {
+                alert('File is too large! Maximum size is 10MB.');
+                return;
+            }
+            
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<p>🔄 Uploading and analyzing image...</p>';
+            
+            try {
+                const formData = new FormData();
+                formData.append('image', file);
+                formData.append('features', JSON.stringify(['Description', 'Tags', 'Objects', 'Color']));
+                
+                const response = await fetch('/api/v1/analyze/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                displayResults(data);
+                
+            } catch (error) {
+                resultDiv.innerHTML = '<h2 style="color: red;">❌ Error</h2><p>' + error.message + '</p>';
+            }
+        }
+        
+        function displayResults(data) {
+            const resultDiv = document.getElementById('result');
+            
+            if (data.success) {
+                let html = '<h2 style="color: green;">✅ Analysis Complete!</h2>';
+                
+                // Description
+                if (data.data.description && data.data.description.captions && data.data.description.captions[0]) {
+                    html += '<h3>📝 Description</h3>';
+                    html += '<p><strong>' + data.data.description.captions[0].text + '</strong></p>';
+                    html += '<p>Confidence: ' + (data.data.description.captions[0].confidence * 100).toFixed(1) + '%</p>';
+                }
+                
+                // Tags
+                if (data.data.tags && data.data.tags.length > 0) {
+                    html += '<h3>🏷️ Tags</h3><p>';
+                    data.data.tags.slice(0, 10).forEach(tag => {
+                        html += '<span class="tag">' + tag.name + ' (' + (tag.confidence * 100).toFixed(0) + '%)</span> ';
+                    });
+                    html += '</p>';
+                }
+                
+                // Objects
+                if (data.data.objects && data.data.objects.length > 0) {
+                    html += '<h3>🎯 Objects Detected</h3><ul>';
+                    data.data.objects.forEach(obj => {
+                        html += '<li><strong>' + obj.object + '</strong> - ' + (obj.confidence * 100).toFixed(1) + '%</li>';
+                    });
+                    html += '</ul>';
+                }
+                
+                // Colors
+                if (data.data.color) {
+                    html += '<h3>🎨 Colors</h3>';
+                    html += '<p><strong>Dominant:</strong> ' + data.data.color.dominantColorForeground + ' / ' + data.data.color.dominantColorBackground + '</p>';
+                    if (data.data.color.accentColor) {
+                        html += '<p><strong>Accent:</strong> <span style="background:#' + data.data.color.accentColor + ';color:white;padding:3px 8px;border-radius:3px;">#' + data.data.color.accentColor + '</span></p>';
+                    }
+                }
+                
+                // Metadata (for uploads)
+                if (data.metadata && data.metadata.filename) {
+                    html += '<h3>📄 File Info</h3>';
+                    html += '<p><strong>Filename:</strong> ' + data.metadata.filename + '</p>';
+                    html += '<p><strong>Size:</strong> ' + (data.metadata.size / 1024).toFixed(2) + ' KB</p>';
+                    html += '<p><strong>Type:</strong> ' + data.metadata.mimeType + '</p>';
+                }
+                
+                // Full JSON
+                html += '<h3>📄 Full Response</h3>';
+                html += '<details><summary>Click to expand JSON</summary>';
+                html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                html += '</details>';
+                
+                resultDiv.innerHTML = html;
+            } else {
+                resultDiv.innerHTML = '<h2 style="color: red;">❌ Error</h2>';
+                resultDiv.innerHTML += '<p><strong>' + data.error + '</strong></p>';
+                if (data.details) {
+                    resultDiv.innerHTML += '<p style="color: #666;">' + data.details + '</p>';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
