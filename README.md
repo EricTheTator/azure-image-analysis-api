@@ -11,7 +11,7 @@ A professional, production-ready REST API that provides seamless access to Micro
 
 ## 🎮 Live Demo
 
-**Interactive Demo:** [http://165.22.163.145:3000/demo-test.html](http://165.22.163.145:3000/demo-test.html)
+**Interactive Demo:** [http://165.22.163.145:3000](http://165.22.163.145:3000)
 
 Test the API with both URL-based analysis and file uploads!
 ---
